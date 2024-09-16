@@ -83,6 +83,7 @@ void loop()
   valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
   distM = irDistance(midirLedPin, midirReceiverPin);
   valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
+  int attempt=0; //how many times we have attempted at a selection point
   
   if ((valL==1 && valM == 1) && valR==1)
   {walls = 3;}
@@ -99,7 +100,6 @@ void loop()
         // since car is driving back ,direction = false;
 
         //the car is now driving back to last selection point  (the different to drive in reverse function, the car turn around and drive forward)
-        goForward();//its actually 2 walls here
     }
     else if (walls==2)
     {
@@ -114,35 +114,103 @@ void loop()
     else if (walls==1)
     {
         //meet the selection point
+
+
+        /*
+        About selection:
+        Since we do not need to remeber the order of the selections( we always goes back the the last selection we make)
+        The selection need to include 3 messages:
+        Options, what did we choose, how many times we have encounter the selection?
+        So that's how to read a selection:
+        ex:<1,2>
+        1,Options: 1 is right, 2 is mid, 3 is left
+        2,what did we choose: it's the first element
+        3, how many times: if the length is 2, means we already encounter this one time; if the length is 1, means we already encounter this two times.
+        */
         if (direction)
         {
-        if (valM==0)
-        {
-            turnRight();
-            wall2_selections.push_back([1,3]);//right is 1, m is 2, l is 3
+
+            vector<int> selection = {};
+            if (valM==0)
+            {
+                turnRight();
+                forward();
+              delay(1000);
+                selection = {1,3};
+            }
+            if (valL==0)
+            {
+                turnRight();
+              forward();
+              delay(1000);
+                selection = {1,2};
+            }
+            if (valR==0)
+            {
+                forward();
+              delay(1000);
+                selection = {2,3};
+            }
+            wall2_selections.push_back(selection);
         }
-        if (valL==0)
-        {
-            turnRight();
-            wall2_selections.push_back([1,2]);
-        }
-        if (valR==0)
-        {
-            forward();
-            wall2_selections.push_back([2,3]);
-        }
-        }
+
+
         else
         {//drive back to selection point
-            turnaround();
-            //now direction is true; because: at this point, the car is changing from driving backward to forward now
-            int[] ls1 = wall2_selections.back();
-            int choice = ls1[1];
-            if (choice==2)
-            {forward();}
+
+
+            direction = true;
+            vector<int> selection = wall2_selections.back();//find the selection we want to do again, also the last selection
+            int choice = selection[0];//find what did we do
+
+            //1,reset the car base on what did we do   复位
+            if (choice==1)
+            {turnRight();}
+            else if(choice==2)
+            {turnaround()}
             else if(choice==3)
             {turnLeft();}
-            wall2_selections.pop_back();
+            //2, We want to kick the wrong option out of the selection variable
+            selection.erase(selection.begin());
+
+
+            if (selection.size()==1)
+            {
+                
+
+                //3,take another choice which is not selected at first time
+                choice = selection[0];
+                if (choice==2)
+                {
+                    forward();//now the car physically locates at the selection point, although the direction is different
+                    delay(1000);//enough time to leave the position
+                }
+                else if(choice==3)
+                {
+                    turnLeft();
+                    forward();
+                    delay(1000);
+                }
+                /*
+                if (attempt==2)
+                {
+                    turnaround();
+                    goForward();
+                    delay(1000);// A delay is necessary here since at this point, car locats at a two point
+                    direction = false;//we need to drive back to last selection again
+                    attempt = 0;
+                    wall2_selections.pop_back();
+                }
+                */
+            }
+            else if (selection.size()==0)
+            {
+                //means we have already encounter this two times
+                turnaround();
+                goForward();
+                delay(1000);// A delay is necessary here since at this point, car locats at a two point
+                wall2_selections.pop_back();
+            }
         }
     }
     else(walls == 0)
