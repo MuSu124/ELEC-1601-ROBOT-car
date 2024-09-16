@@ -33,13 +33,6 @@ const long leftfrequency = 38000;// 8.2cm
 const long middlefrequency = 40000;// 8.2cm
 const long rightfrequency = 39000;// 8.2cm
 
-
-
-
-
-
-
-
 void setup(){
   Serial.begin(9600);
   myservoL.attach(13);
