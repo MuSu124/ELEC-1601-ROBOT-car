@@ -10,8 +10,8 @@ Go straight
 Turn 90 degress
 
 ## Advanced Part  
-1, walk out of dead ends  
-2, Spin 720 degree at end  
+1, walk out of dead ends  //Bill
+2, Spin 720 degree at end  //Bill
 3, Return to start point  
 4, Not touch any walls  
 5, Stop before falling  
