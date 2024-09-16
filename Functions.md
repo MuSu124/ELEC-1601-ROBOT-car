@@ -15,4 +15,6 @@ Turn 90 degress
 3, Return to start point  
 4, Not touch any walls  
 5, Stop before falling  //Bill  
-6, As fast as possible
+6, As fast as possible  
+7, Adjust if the car is not at the middle of the path //Jack  
+
