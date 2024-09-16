@@ -1,4 +1,10 @@
 #include <Servo.h>
+#include<iostream>
+#include<vector>
+using namespace std;
+
+
+
 Servo myservoL;
 Servo myservoR;
 int valL = 0;
@@ -18,6 +24,16 @@ int TurnLeft = 1550;
 int Stop = 1500;
 int StopL = 1495;
 int StopR = 1500;
+int walls = 0;//how many walls detected
+bool direction = true; // true says go front, false says go back
+vector<int> wall2_selections = {}; //vector is a data structure similar to python list, it stores all 2 wall selections
+/*
+push_back: add an element to to back
+back: invoke the last element
+pop_back: delete last element
+
+*/
+
 
 const int midirLedPin=6, midirReceiverPin=7;
 const int midredLedPin = A1;
@@ -30,11 +46,16 @@ const long leftfrequency = 38000;// 8.2cm
 const long middlefrequency = 40000;// 8.2cm
 const long rightfrequency = 39000;// 8.2cm
 
+//why these three frequencies differ?
 
 void setup(){
   Serial.begin(9600);
-  myservoL.attach(13);
+
+  //connect the wheel
+  myservoL.attach(13);      
   myservoR.attach(12);
+
+  //connect the ir light
   pinMode(midirReceiverPin, INPUT);            // IR receiver pin is an input
   pinMode(midirLedPin, OUTPUT);                // IR LED pin is an ouput
   pinMode(midredLedPin, OUTPUT);               // Red LED pin is an output
@@ -44,6 +65,8 @@ void setup(){
   pinMode(rightirReceiverPin, INPUT);            // IR receiver pin is an input
   pinMode(rightirLedPin, OUTPUT);                // IR LED pin is an ouput
   pinMode(rightredLedPin, OUTPUT);               // Red LED pin is an output
+
+
   Serial.begin(9600);  
   stop();
   delay(5000);
@@ -54,11 +77,80 @@ void setup(){
 void loop()
 {
   delay(100);
+  walls = 0;
+  //1, check the walls
   valL = irDetect(leftirLedPin, leftirReceiverPin, leftfrequency);
   valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
   distM = irDistance(midirLedPin, midirReceiverPin);
   valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
-  //Serial.print(distM);
+  
+  if ((valL==1 && valM == 1) && valR==1)
+  {walls = 3;}
+  else if (((valL==0&&valM==0)||(valL==0&&valR==0))||(valM==0&&valR==0))
+  {walls = 2;}
+   else if (((valL==0&&valM==1)||(valL==1&&valR==1))||(valM==1&&valR==1))
+  {walls = 1;}
+   else
+  {walls = 0;}
+
+    if (walls==3)
+    {
+        turnaround();
+        // since car is driving back ,direction = false;
+
+        //the car is now driving back to last selection point  (the different to drive in reverse function, the car turn around and drive forward)
+        goForward();//its actually 2 walls here
+    }
+    else if (walls==2)
+    {
+        if(valM==1)
+        {goForward();}
+        if(valR==1)
+        {turnRight();}
+        if(valL==1)
+        {turnLeft();}
+        
+    }
+    else if (walls==1)
+    {
+        //meet the selection point
+        if (direction)
+        {
+        if (valM==0)
+        {
+            turnRight();
+            wall2_selections.push_back([1,3]);//right is 1, m is 2, l is 3
+        }
+        if (valL==0)
+        {
+            turnRight();
+            wall2_selections.push_back([1,2]);
+        }
+        if (valR==0)
+        {
+            forward();
+            wall2_selections.push_back([2,3]);
+        }
+        }
+        else
+        {//drive back to selection point
+            turnaround();
+            //now direction is true; because: at this point, the car is changing from driving backward to forward now
+            int[] ls1 = wall2_selections.back();
+            int choice = ls1[1];
+            if (choice==2)
+            {forward();}
+            else if(choice==3)
+            {turnLeft();}
+            wall2_selections.pop_back();
+        }
+    }
+    else(walls == 0)
+    {goForward();}
+
+
+/*
+
   if (valL == 1){
       turnRight();
       stop();
@@ -72,14 +164,21 @@ void loop()
   else if (valL == 0 && valR == 0 && valM ==0){
     stop();
   }
+
   else{
     distM = irDistance(midirLedPin, midirReceiverPin);
     if ( distM > 3){
     goForward();
     }
   }
-  
+  */
+
 }
+
+
+
+
+//get wall deteceted
 int irDetect(int irLedPin, int irReceiverPin, long frequency){
   tone(irLedPin, frequency);                 // Turn on the IR LED square wave
   delay(1);                                  // Wait 1 ms
@@ -89,6 +188,10 @@ int irDetect(int irLedPin, int irReceiverPin, long frequency){
   delay(50);                                  // Down time before recheck
   return ir;                                 // Return 0 detect, 1 no detect
 }
+
+
+
+//get distance against wall
 int irDistance(int irLedPin, int irReceiverPin){
    int distance = 0;
    for(long f = 38000; f <= 42000; f += 1000)
@@ -97,6 +200,14 @@ int irDistance(int irLedPin, int irReceiverPin){
    }
    return distance;
 }
+
+
+
+
+//car behavior
+//when car do the behavior, program should stop before it finished
+
+//basic turning
 void turnLeft(){
   Serial.println("Begining left turn");
   myservoL.writeMicroseconds(TurnLeft);
@@ -117,6 +228,15 @@ void goForward(){
   myservoL.writeMicroseconds(LeftForward);
   myservoR.writeMicroseconds(RightForward);
   Serial.println("Forward Completed"); 
+}
+
+
+//extension
+void turnaround(){
+    stop();
+    turnRight();
+    turnRight();
+    direction = !direction;
 }
 void reverse(){
   Serial.println("Reversing");
@@ -141,7 +261,7 @@ void adjustor(){
   Serial.println(distR);
 
   while (distL < distR){
-    myservoR.writeMicroseconds(1510);
+    myservoR.writeMicroseconds(1510);// Bill: Do we need a delay here?
     distL = irDistance(leftirLedPin, leftirReceiverPin);
     distR = irDistance(rightirLedPin, rightirReceiverPin);
     if (distL == distR){
@@ -174,3 +294,4 @@ void testspeed(){
 
    }; 
 }
+
