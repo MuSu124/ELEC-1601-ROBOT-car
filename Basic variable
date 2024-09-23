@@ -34,6 +34,7 @@ int valM = 0;
 int distM = 0;
 int distL = 0;
 int distR = 0;
+int deadendcheck = 10;
 // Advanced part variables for mazeEnd function
 int commands[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int comindex = 0; // 0 = do nothing, 1 = Right turn, 2 = Left turn, 3 = go forward
@@ -66,33 +67,31 @@ void loop()
   valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
   distM = irDistance(midirLedPin, midirReceiverPin);
   valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
+  deadendcheck = valL + valR + valM;
+  
   //Serial.print(distM);
-  if (valM == 0){
-    if (valL == 1){
-      turnRight();
-      commands[comindex] = 1;
-      comindex+=1;
+  if (valM == 1){
+    if (valL == 0 && valR == 0){
+      	adjustor();
+      	goForward();
+    	commands[comindex] = 3;
+        comindex+=1;
     }
     else if (valR == 1){
       turnLeft();
       commands[comindex] = 2;
       comindex+=1;
-
     }
-    else if (valL == 0 && valR == 0 && valM ==0){
-      stop();
-    }
-    else{
-      distM = irDistance(midirLedPin, midirReceiverPin);
-      if ( distM > 3){
-        goForward();
-        commands[comindex] = 3;
-        comindex+=1;
-      }
+    else if (valL == 1){
+      turnRight();
+      commands[comindex] = 1;
+      comindex+=1;
     }
   }
-
+  else if (deadendcheck == 0);{
+    mazeEnd();
   }
+}
 int irDetect(int irLedPin, int irReceiverPin, long frequency){
   tone(irLedPin, frequency);                 // Turn on the IR LED square wave
   delay(1);                                  // Wait 1 ms
@@ -137,13 +136,6 @@ void goForward(){
   stop();
   Serial.println("Forward Completed"); 
 }
-void reverse(){
-  Serial.println("Reversing");
-  myservoL.writeMicroseconds(LeftReverse);
-  myservoR.writeMicroseconds(RightReverse);
-  delay(3000);
-  Serial.println("Reversing Completed");
-}
 void stop(){
   Serial.println("Stopping");
   myservoL.writeMicroseconds(StopL);
@@ -158,27 +150,65 @@ void adjustor(){
   distL = irDistance(leftirLedPin, leftirReceiverPin);
   Serial.println("Right:");
   Serial.println(distR);
-
-  while (distL < distR){
-    myservoR.writeMicroseconds(1510);
-    distL = irDistance(leftirLedPin, leftirReceiverPin);
-    distR = irDistance(rightirLedPin, rightirReceiverPin);
-    if (distL == distR){
-      stop();
-      break;
-    }
+  if ( distL == 5 || distR == 5){
+    Serial.println("Open wall");
   }
-  while (distL > distR){
-    myservoL.writeMicroseconds(1480);
-    distL = irDistance(leftirLedPin, leftirReceiverPin);
-    distR = irDistance(rightirLedPin, rightirReceiverPin);
-    if (distL == distR){
-      stop();
-      break;
+  else{
+    while (distL < distR){
+      myservoR.writeMicroseconds(1510);
+      distL = irDistance(leftirLedPin, leftirReceiverPin);
+      distR = irDistance(rightirLedPin, rightirReceiverPin);
+      if (distL == distR){
+        stop();
+        break;
+      }
+    }
+    while (distL > distR){
+      myservoL.writeMicroseconds(1480);
+      distL = irDistance(leftirLedPin, leftirReceiverPin);
+      distR = irDistance(rightirLedPin, rightirReceiverPin);
+      if (distL == distR){
+        stop();
+        break;
+      }
     }
   }
 }
-void testspeed(){
+void mazeEnd(){
+  myservoL.writeMicroseconds(TurnRight);
+  myservoR.writeMicroseconds(TurnRight);
+  delay(Rightturntime*8);
+  stop();
+  /*
+  for (int i = 0; i < 25; i = i + 1) {
+  	curcom = commands[i];
+    if (curcom == 0){
+      continue;
+    }
+    else if (curcom == 1){
+      turnRight();
+    }
+    else if (curcom == 2){
+      turnLeft();
+    }
+    else if (curcom == 3){
+      adjustor();
+      goForward();
+    }
+	}
+    */
+}
+void robotcheck(){
+  stop();
+  goForward();
+  myservoL.writeMicroseconds(TurnLeft);
+  myservoR.writeMicroseconds(TurnLeft);
+  delay(Leftturntime*4);
+  myservoL.writeMicroseconds(TurnRight);
+  myservoR.writeMicroseconds(TurnRight);
+  delay(Rightturntime*4);
+}
+void config(){
   int sl = 1500;
   for(int s = 1500; s <= 1700; s += 25)
    {
@@ -193,27 +223,10 @@ void testspeed(){
 
    }; 
 }
-void mazeEnd(){
-  myservoL.writeMicroseconds(TurnRight);
-  myservoR.writeMicroseconds(TurnRight);
-  delay(Rightturntime*8);
-  stop();
-  for (int i = 0; i < 25; i = i + 1) {
-  	curcom = commands[i];
-    if (curcom == 0){
-      continue;
-    }
-    else if (curcom == 1){
-      turnRight();
-      goForward();
-    }
-    else if (curcom == 2){
-      turnLeft();
-      goForward();
-    }
-    else if (curcom == 3){
-      goForward();
-    }
-    
-}
+void reverse(){
+  Serial.println("Reversing");
+  myservoL.writeMicroseconds(LeftReverse);
+  myservoR.writeMicroseconds(RightReverse);
+  delay(3000);
+  Serial.println("Reversing Completed");
 }
