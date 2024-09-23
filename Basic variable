@@ -56,7 +56,7 @@ void setup(){
   Serial.begin(9600);  
   stop();
   delay(5000);
-  adjustor();
+  //adjustor();
   Serial.print("Robot Starting"); 
 }
 
