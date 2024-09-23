@@ -78,12 +78,12 @@ void loop()
         comindex+=1;
     }
     else if (valR == 1){
-      turnLeft();
+      turnRight();
       commands[comindex] = 2;
       comindex+=1;
     }
     else if (valL == 1){
-      turnRight();
+      turnLeft();
       commands[comindex] = 1;
       comindex+=1;
     }
