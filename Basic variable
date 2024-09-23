@@ -70,7 +70,7 @@ void loop()
   deadendcheck = valL + valR + valM;
   
   //Serial.print(distM);
-  if (valM == 1){
+  if (distM == 5){
     if (valL == 0 && valR == 0){
       	adjustor();
       	goForward();
