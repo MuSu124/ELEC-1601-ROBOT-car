@@ -1,6 +1,8 @@
 #include <Servo.h>
+/*
 #include<iostream>
 #include<vector>
+*/
 using namespace std;
 
 
@@ -25,8 +27,8 @@ int Stop = 1500;
 int StopL = 1495;
 int StopR = 1500;
 int walls = 0;//how many walls detected
-bool direction = true; // true says go front, false says go back
-vector<int> wall2_selections = {}; //vector is a data structure similar to python list, it stores all 2 wall selections
+//bool direction = true; // true says go front, false says go back
+//vector<int> wall2_selections = {}; //vector is a data structure similar to python list, it stores all 2 wall selections
 /*
 push_back: add an element to to back
 back: invoke the last element
@@ -83,11 +85,11 @@ void loop()
   valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
   distM = irDistance(midirLedPin, midirReceiverPin);
   valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
-  int attempt=0; //how many times we have attempted at a selection point
+  //int attempt=0; //how many times we have attempted at a selection point
   
-  if ((valL==1 && valM == 1) && valR==1)
+  if ((valL+valM +valR==0)
   {walls = 3;}
-  else if (((valL==0&&valM==0)||(valL==0&&valR==0))||(valM==0&&valR==0))
+  else if (valL+valM+valR==1)
   {walls = 2;}
    else if (((valL==0&&valM==1)||(valL==1&&valR==1))||(valM==1&&valR==1))
   {walls = 1;}
@@ -111,12 +113,13 @@ void loop()
         {turnLeft();}
         
     }
+      /*
     else if (walls==1)
     {
         //meet the selection point
 
 
-        /*
+
         About selection:
         Since we do not need to remeber the order of the selections( we always goes back the the last selection we make)
         The selection need to include 3 messages:
@@ -126,7 +129,7 @@ void loop()
         1,Options: 1 is right, 2 is mid, 3 is left
         2,what did we choose: it's the first element
         3, how many times: if the length is 2, means we already encounter this one time; if the length is 1, means we already encounter this two times.
-        */
+
         if (direction)
         {
 
@@ -153,7 +156,7 @@ void loop()
             }
             wall2_selections.push_back(selection);
         }
-
+  
 
         else
         {//drive back to selection point
@@ -201,9 +204,9 @@ void loop()
                     attempt = 0;
                     wall2_selections.pop_back();
                 }
-                */
+
             }
-            else if (selection.size()==0)
+            else if (selection.size()==0)  this function is not used
             {
                 //means we have already encounter this two times
                 turnaround();
@@ -213,6 +216,7 @@ void loop()
             }
         }
     }
+*/
     else(walls == 0)
     {goForward();}
 
