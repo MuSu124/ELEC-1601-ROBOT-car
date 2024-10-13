@@ -15,8 +15,8 @@ const int LeftForward = 1600;
 const int RightForward = 1400;
 const int LeftReverse = 1400;
 const int RightReverse = 1600;
-const int TurnRight = 1450;
-const int TurnLeft = 1550;
+const int TurnRight = 1350;
+const int TurnLeft = 1650;
 const int Stop = 1500;
 const int midirLedPin=6, midirReceiverPin=7;
 const int midredLedPin = A1;
@@ -51,21 +51,23 @@ void setup(){
   pinMode(rightredLedPin, OUTPUT);               // Red LED pin is an output
   Serial.begin(9600);  
   stop();
-  delay(5000);
+  delay(2500);
   adjustor();
   Serial.print("Robot Starting");
 }
 
 void loop()
 { 
+  //adjustor();
+ 
   Serial.println(valM);
-  delay(100);
+  //delay(100);
   valL = irDetect(leftirLedPin, leftirReceiverPin, leftfrequency);
   valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
   distM = irDistance(midirLedPin, midirReceiverPin);
   valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
   //Serial.print(distM);
-  while (distM < 5){
+  while (distM < 7){
     
     if (valL == 1){
       turnRight();
@@ -84,10 +86,15 @@ void loop()
       //TurnAround()
     }
     distM = irDistance(midirLedPin, midirReceiverPin);
-  }
-  if (distM == 5){
+ }
+  if (distM == 7){
     goForward();
+    //if (valL == 0 && valR == 0){
+      //adjustor();
+
+    //}
   }
+
   }
 int irDetect(int irLedPin, int irReceiverPin, long frequency){
   tone(irLedPin, frequency);                 // Turn on the IR LED square wave
@@ -95,12 +102,12 @@ int irDetect(int irLedPin, int irReceiverPin, long frequency){
   noTone(irLedPin);                          // Turn off the IR LED
   int ir = digitalRead(irReceiverPin);      
   //Serial.println(ir);  // IR receiver -> ir variable
-  delay(50);                                  // Down time before recheck
+  delay(5);                                  // Down time before recheck
   return ir;                                 // Return 0 detect, 1 no detect
 }
 int irDistance(int irLedPin, int irReceiverPin){
    int distance = 0;
-   for(long f = 38000; f <= 42000; f += 1000)
+   for(long f = 36000; f <= 42000; f += 1000)
    {
       distance += irDetect(irLedPin, irReceiverPin, f);
    }
@@ -109,7 +116,7 @@ int irDistance(int irLedPin, int irReceiverPin){
 void turnLeft(){
   //Serial.println("Begining left turn");
   myservoL.writeMicroseconds(TurnLeft);
-  myservoR.writeMicroseconds(TurnLeft);
+  myservoR.writeMicroseconds(Stop);
   delay(Leftturntime);
   stop();
   //goForward();
@@ -118,7 +125,7 @@ void turnLeft(){
 }
 void turnRight(){
   //Serial.println("Begining right turn");
-  myservoL.writeMicroseconds(TurnRight);
+  myservoL.writeMicroseconds(Stop);
   myservoR.writeMicroseconds(TurnRight);
   delay(Rightturntime);
   stop();
@@ -156,7 +163,8 @@ void adjustor(){
   Serial.println(distR);
 
   while (distL < distR){
-    myservoR.writeMicroseconds(1510);
+    stop();
+    myservoL.writeMicroseconds(1530);
     distL = irDistance(leftirLedPin, leftirReceiverPin);
     distR = irDistance(rightirLedPin, rightirReceiverPin);
     if (distL == distR){
@@ -165,7 +173,8 @@ void adjustor(){
     }
   }
   while (distL > distR){
-    myservoL.writeMicroseconds(1480);
+    stop();
+    myservoR.writeMicroseconds(1460);
     distL = irDistance(leftirLedPin, leftirReceiverPin);
     distR = irDistance(rightirLedPin, rightirReceiverPin);
     if (distL == distR){
