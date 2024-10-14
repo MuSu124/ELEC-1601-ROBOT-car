@@ -58,7 +58,6 @@ void setup(){
 
 void loop()
 { 
-  //adjustor();
  
   Serial.println(valM);
   //delay(100);
@@ -89,10 +88,10 @@ void loop()
  }
   if (distM == 7){
     goForward();
-    //if (valL == 0 && valR == 0){
-      //adjustor();
+    if (valL == 0 && valR == 0){
+      adjustor();
 
-    //}
+    }
   }
 
   }
@@ -156,31 +155,29 @@ void stop(){
 }
 void adjustor(){
   distR = irDistance(rightirLedPin, rightirReceiverPin);
-  Serial.println("Left:");
-  Serial.println(distL);
   distL = irDistance(leftirLedPin, leftirReceiverPin);
-  Serial.println("Right:");
-  Serial.println(distR);
+  distM = irDistance(midirLedPin, midirReceiverPin);
 
-  while (distL < distR){
-    stop();
-    myservoL.writeMicroseconds(1530);
-    distL = irDistance(leftirLedPin, leftirReceiverPin);
-    distR = irDistance(rightirLedPin, rightirReceiverPin);
-    if (distL == distR){
+  while (distL != distR){
+    if (distM == 7){
       stop();
+      if (distL > distR){
+        myservoR.writeMicroseconds(1460);
+      }
+      if (distL < distR){
+        myservoL.writeMicroseconds(1530);
+      }
+      distL = irDistance(leftirLedPin, leftirReceiverPin);
+      distR = irDistance(rightirLedPin, rightirReceiverPin);
+      distM = irDistance(midirLedPin, midirReceiverPin);
+      if (distL == distR){
+        stop();
+        break;
+    }
+    else{
       break;
     }
   }
-  while (distL > distR){
-    stop();
-    myservoR.writeMicroseconds(1460);
-    distL = irDistance(leftirLedPin, leftirReceiverPin);
-    distR = irDistance(rightirLedPin, rightirReceiverPin);
-    if (distL == distR){
-      stop();
-      break;
-    }
   }
 }
 void testspeed(){
