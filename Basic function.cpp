@@ -148,7 +148,7 @@ void adjustor(){
   distL = irDistance(leftirLedPin, leftirReceiverPin);
   distM = irDistance(midirLedPin, midirReceiverPin);
 
-  while (distL != distR){
+  while (distL+1 != distR){
     while (distM <= 7){
       stop();
       if (distL > distR){
