@@ -58,9 +58,6 @@ void setup(){
 
 void loop()
 { 
- 
-  Serial.println(valM);
-  //delay(100);
   valL = irDetect(leftirLedPin, leftirReceiverPin, leftfrequency);
   valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
   distM = irDistance(midirLedPin, midirReceiverPin);
@@ -70,15 +67,9 @@ void loop()
     
     if (valL == 1){
       turnRight();
-      
-      //commands[comindex] = 1;
-      //comindex+=1;
     }
     else if (valR == 1){
       turnLeft();
-      //commands[comindex] = 2;
-      //comindex+=1;
-
     }
     else if (valL == 0 && valR == 0){
       stop();
@@ -90,7 +81,6 @@ void loop()
     goForward();
     if (valL == 0 && valR == 0){
       adjustor();
-
     }
   }
 
@@ -160,6 +150,7 @@ void adjustor(){
 
   while (distL != distR){
     if (distM == 7){
+      goForward();
       stop();
       if (distL > distR){
         myservoR.writeMicroseconds(1460);
@@ -173,12 +164,40 @@ void adjustor(){
       if (distL == distR){
         stop();
         break;
+      }
+      else if (distL > 6){
+        stop();
+        break;
+      }
+      else if (distR > 6){
+        stop();
+        break;
+      }
     }
     else{
-      break;
-    }
+      if (distL > distR){
+        myservoR.writeMicroseconds(1460);
+      }
+      if (distL < distR){
+        myservoL.writeMicroseconds(1530);
+      }
+      distL = irDistance(leftirLedPin, leftirReceiverPin);
+      distR = irDistance(rightirLedPin, rightirReceiverPin);
+      distM = irDistance(midirLedPin, midirReceiverPin);
+      if (distL == distR){
+        stop();
+        break;
+      }
+      else if (distL > 6){
+        stop();
+        break;
+      }
+      else if (distR > 6){
+        stop();
+        break;
+      }
   }
-  }
+}
 }
 void testspeed(){
   int sl = 1500;
