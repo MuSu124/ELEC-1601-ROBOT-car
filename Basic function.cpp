@@ -100,20 +100,28 @@ void loop()
 // new moving logic
  if(valL==1 || valR==1)
  {
-   if (valL==1)
+   if (valR==1)
    {
+     goForward();// go forward for a couple of seconds, to go over the 
      delay(250);
-     turnRight();
+     rotate_right();//rotate at current location 
+     delay(500);
+     goForward();
+     delay(250);
    }
-   else if(valR==1)
+   else if(valL==1)
    {
+     goForward();// go forward for a couple of seconds, to go over the 
      delay(250);
-     turnLeft();
+     rotate_left();//rotate at current location 
+     delay(500);
+     goForward();
+     delay(250);
    }
 }
 else
 {
-  if (distL != distR)
+  if (distM<=2)
   {
     adjustor2();
   }
@@ -146,6 +154,22 @@ int irDistance(int irLedPin, int irReceiverPin){
    }
    return distance;
 }
+void rotate_right()
+{
+  //set wheel speed, left forward, right reverse
+  myservoL.writeMicroseconds(LeftForward);
+  myservoR.writeMicroseconds(RightReverse);
+  //give time to rotate the car
+  delay(25);
+}
+void rotate_left()
+{
+  //set wheel speed, left forward, right reverse
+  myservoL.writeMicroseconds(LeftReverse);
+  myservoR.writeMicroseconds(RightForward);
+  //give time to rotate the car
+  delay(25);
+}
 void turnLeft(){
   Serial.println("Begining left turn");
   myservoL.writeMicroseconds(TurnLeft);
@@ -169,7 +193,7 @@ void goForward(){
   Serial.println("Going Forward");
   myservoL.writeMicroseconds(LeftForward);
   myservoR.writeMicroseconds(RightForward);
-  delay(forwardTime);
+  delay(25);
   //stop();
   Serial.println("Forward Completed");
 }
@@ -226,11 +250,11 @@ void adjustor2(){
   Serial.println(distR);
 
   if (distL < distR){
-    myservoR.writeMicroseconds(1510);
+    rotate_right();
     delay(100);
   }
   if (distL > distR){
-    myservoL.writeMicroseconds(1480);
+    rotate_left();
     delay(100);
   }
 }
