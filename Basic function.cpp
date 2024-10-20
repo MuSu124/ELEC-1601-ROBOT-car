@@ -2,8 +2,8 @@
 Servo myservoL;
 Servo myservoR;
 // Variables that will need to be configured
-int Leftturntime = 840; // time needed for robot to rotate 90 degrees left
-int Rightturntime = 1007; // time needed for robot to rotate 90 degrees right
+int Leftturntime = 1000; // time needed for robot to rotate 90 degrees left
+int Rightturntime = 1017; // time needed for robot to rotate 90 degrees right
 int forwardTime = 500; // time needed for robot to move 1 maze unit, maze wall is 20cm, maze corner is 7cm
 int StopL = 1495; // 0 Wheel speed for left wheel
 int StopR = 1500; // 0 Wheel speed for right wheel
@@ -155,4 +155,23 @@ void stop(){
   myservoR.writeMicroseconds(StopR);
   //delay(5);
   //Serial.println("Resuming");
+}
+
+
+void movement(){
+  distR = irDistance(rightirLedPin, rightirReceiverPin);
+  distL = irDistance(leftirLedPin, leftirReceiverPin);
+  distM = irDistance(midirLedPin, midirReceiverPin);
+  if (distL > distR){
+    myservoR.writeMicroseconds(1410);
+    myservoL.writeMicroseconds(1530);
+  }
+  else if (distL < distR){
+    myservoL.writeMicroseconds(1590);
+    myservoR.writeMicroseconds(1460);
+  }
+  else if (distL == distR){
+    myservoL.writeMicroseconds(LeftForward);
+    myservoR.writeMicroseconds(RightForward);
+  }
 }
