@@ -51,7 +51,7 @@ void setup(){
   pinMode(rightredLedPin, OUTPUT);               // Red LED pin is an output
   Serial.begin(9600);  
   stop();
-  delay(2500);
+  delay(1000);
   Serial.print("Robot Starting");
 }
 
@@ -64,25 +64,49 @@ void loop()
   distR = irDistance(rightirLedPin, rightirReceiverPin);
   distL = irDistance(leftirLedPin, leftirReceiverPin);
   distM = irDistance(midirLedPin, midirReceiverPin);
-  if (distM < 5){
+  if (distM < 7){
     if(valL==1 || valR==1){
-      if (valL==1){
+      if (valL == 1 && valR == 1){
+        if (distL > distR){
+          turnRight();
+          myservoL.writeMicroseconds(LeftForward);
+          myservoR.writeMicroseconds(RightForward);
+          delay(100);
+        }
+        else if (distL < distR){
+          turnLeft();
+          myservoL.writeMicroseconds(LeftForward);
+          myservoR.writeMicroseconds(RightForward);
+          delay(100);
+        }
+      }
+      else if (valL==1){
       turnRight();
       myservoL.writeMicroseconds(LeftForward);
       myservoR.writeMicroseconds(RightForward);
+      delay(100);
       }
       else if(valR==1){
       turnLeft();
       myservoL.writeMicroseconds(LeftForward);
       myservoR.writeMicroseconds(RightForward);
+      delay(100);
       }
     }
   }
-  else if (distM <3){
-    stop();
-  }
   else{
-    goForward();
+    if (valL == 0 && valR == 0){
+      if (distM <3){
+        stop();
+      }
+      else{
+        goForward();
+      }
+    }
+    else{
+      myservoL.writeMicroseconds(LeftForward);
+      myservoR.writeMicroseconds(RightForward);
+    }
   }
 }
 
