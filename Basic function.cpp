@@ -2,8 +2,8 @@
 Servo myservoL;
 Servo myservoR;
 // Variables that will need to be configured
-int Leftturntime = 1050; // time needed for robot to rotate 90 degrees left
-int Rightturntime = 1250; // time needed for robot to rotate 90 degrees right
+int Leftturntime = 550; // time needed for robot to rotate 90 degrees left
+int Rightturntime = 555; // time needed for robot to rotate 90 degrees right
 int forwardTime = 500; // time needed for robot to move 1 maze unit, maze wall is 20cm, maze corner is 7cm
 int StopL = 1495; // 0 Wheel speed for left wheel
 int StopR = 1500; // 0 Wheel speed for right wheel
@@ -12,11 +12,11 @@ const long middlefrequency = 40000;// detects walls from the same distance
 const long rightfrequency = 39000;// currently set to 8.2cm
 // Constant Variables
 const int LeftForward = 1600;
-const int LeftReverse = 1400;
 const int RightForward = 1400;
+const int LeftReverse = 1400;
 const int RightReverse = 1600;
-const int TurnRight = 1450;
-const int TurnLeft = 1550;
+const int TurnRight = 1350;
+const int TurnLeft = 1650;
 const int Stop = 1500;
 const int midirLedPin=6, midirReceiverPin=7;
 const int midredLedPin = A1;
@@ -51,8 +51,8 @@ void setup(){
   pinMode(rightredLedPin, OUTPUT);               // Red LED pin is an output
   Serial.begin(9600);  
   stop();
-  delay(5000);
-  //adjustor();
+  delay(2500);
+  adjustor();
   Serial.print("Robot Starting");
 }
 
@@ -64,8 +64,6 @@ void loop()
   distM = irDistance(midirLedPin, midirReceiverPin);
   valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
   //Serial.print(distM);
-
- 
  /*
   if (valM == 0){
     if (valL == 0){
@@ -96,24 +94,26 @@ void loop()
   else {
     goForward();
   }
-*/
 
+*/
 
 // new moving logic
  if(valL==1 || valR==1)
  {
    if (valL==1)
    {
-     turnLeft();
+     delay(250);
+     turnRight();
    }
    else if(valR==1)
    {
-     turnRight();
+     delay(250);
+     turnLeft();
    }
 }
 else
 {
-  if (distM<=2)
+  if (distL != distR)
   {
     adjustor2();
   }
@@ -121,6 +121,8 @@ else
   {
     goForward();
   }
+}
+
 }
 
 
@@ -150,7 +152,7 @@ void turnLeft(){
   myservoR.writeMicroseconds(TurnLeft);
   delay(Leftturntime);
   stop();
-  goForward();
+  //goForward();
   Serial.println("Left Turn Completed");
  
 }
@@ -160,7 +162,7 @@ void turnRight(){
   myservoR.writeMicroseconds(TurnRight);
   delay(Rightturntime);
   stop();
-  goForward();
+  //goForward();
   Serial.println("Right Turn Completed");
 }
 void goForward(){
@@ -225,11 +227,11 @@ void adjustor2(){
 
   if (distL < distR){
     myservoR.writeMicroseconds(1510);
-    delay(1000);
+    delay(100);
   }
   if (distL > distR){
     myservoL.writeMicroseconds(1480);
-    delay(1000);
+    delay(100);
   }
 }
 
