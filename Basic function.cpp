@@ -62,29 +62,45 @@ void loop()
   valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
   distM = irDistance(midirLedPin, midirReceiverPin);
   valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
+  distR = irDistance(rightirLedPin, rightirReceiverPin);
+  distL = irDistance(leftirLedPin, leftirReceiverPin);
+  distM = irDistance(midirLedPin, midirReceiverPin);
   //Serial.print(distM);
-  while (distM < 6){
-    
     if (valL == 1){
+      stop();
       turnRight();
     }
     else if (valR == 1){
+      stop();
       turnLeft();
     }
     else if (valL == 0 && valR == 0){
-      stop();
-      //TurnAround()
+      if (distM <5){
+        stop();
+      }
     }
     distM = irDistance(midirLedPin, midirReceiverPin);
- }
-  if (distM > 5){
-    goForward();
-    if (valL == 0 && valR == 0){
-      adjustor();
+    if (distM <= 7){
+      if (distL > distR){
+        myservoR.writeMicroseconds(1410);
+        myservoL.writeMicroseconds(1530);
+      }
+      else if (distL < distR){
+        myservoL.writeMicroseconds(1590);
+        myservoR.writeMicroseconds(1460);
+      }
+      else if (distL == distR){
+          myservoL.writeMicroseconds(LeftForward);
+          myservoR.writeMicroseconds(RightForward);
+      }
+      distL = irDistance(leftirLedPin, leftirReceiverPin);
+      distR = irDistance(rightirLedPin, rightirReceiverPin);
+      distM = irDistance(midirLedPin, midirReceiverPin);
     }
-  }
 
-  }
+}
+
+
 int irDetect(int irLedPin, int irReceiverPin, long frequency){
   tone(irLedPin, frequency);                 // Turn on the IR LED square wave
   delay(1);                                  // Wait 1 ms
@@ -152,26 +168,20 @@ void adjustor(){
     while (distM <= 7){
       stop();
       if (distL > distR){
+        myservoR.writeMicroseconds(1410);
+        myservoL.writeMicroseconds(1530);
+      }
+      else if (distL < distR){
+        myservoL.writeMicroseconds(1590);
         myservoR.writeMicroseconds(1460);
       }
-      if (distL < distR){
-        myservoL.writeMicroseconds(1530);
+      else if (distL == distR){
+          myservoL.writeMicroseconds(LeftForward);
+          myservoR.writeMicroseconds(RightForward);
       }
       distL = irDistance(leftirLedPin, leftirReceiverPin);
       distR = irDistance(rightirLedPin, rightirReceiverPin);
       distM = irDistance(midirLedPin, midirReceiverPin);
-      if (distL == distR){
-        stop();
-        break;
-      }
-      else if (distL > 6){
-        stop();
-        break;
-      }
-      else if (distR > 6){
-        stop();
-        break;
-      }
     }
   }
 }
