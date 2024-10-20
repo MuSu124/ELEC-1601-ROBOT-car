@@ -52,7 +52,6 @@ void setup(){
   Serial.begin(9600);  
   stop();
   delay(2500);
-  adjustor();
   Serial.print("Robot Starting");
 }
 
@@ -65,39 +64,26 @@ void loop()
   distR = irDistance(rightirLedPin, rightirReceiverPin);
   distL = irDistance(leftirLedPin, leftirReceiverPin);
   distM = irDistance(midirLedPin, midirReceiverPin);
-  //Serial.print(distM);
-    if (valL == 1){
-      stop();
+  if (distM < 5){
+    if(valL==1 || valR==1){
+      if (valL==1){
       turnRight();
-    }
-    else if (valR == 1){
-      stop();
+      myservoL.writeMicroseconds(LeftForward);
+      myservoR.writeMicroseconds(RightForward);
+      }
+      else if(valR==1){
       turnLeft();
-    }
-    else if (valL == 0 && valR == 0){
-      if (distM <5){
-        stop();
+      myservoL.writeMicroseconds(LeftForward);
+      myservoR.writeMicroseconds(RightForward);
       }
     }
-    distM = irDistance(midirLedPin, midirReceiverPin);
-    if (distM <= 7){
-      if (distL > distR){
-        myservoR.writeMicroseconds(1410);
-        myservoL.writeMicroseconds(1530);
-      }
-      else if (distL < distR){
-        myservoL.writeMicroseconds(1590);
-        myservoR.writeMicroseconds(1460);
-      }
-      else if (distL == distR){
-          myservoL.writeMicroseconds(LeftForward);
-          myservoR.writeMicroseconds(RightForward);
-      }
-      distL = irDistance(leftirLedPin, leftirReceiverPin);
-      distR = irDistance(rightirLedPin, rightirReceiverPin);
-      distM = irDistance(midirLedPin, midirReceiverPin);
-    }
-
+  }
+  else if (distM <3){
+    stop();
+  }
+  else{
+    goForward();
+  }
 }
 
 
@@ -138,12 +124,21 @@ void turnRight(){
  // Serial.println("Right Turn Completed");
 }
 void goForward(){
-  //Serial.println("Going Forward");
-  myservoL.writeMicroseconds(LeftForward);
-  myservoR.writeMicroseconds(RightForward);
-  //delay(forwardTime);
-  //stop();
-  //Serial.println("Forward Completed");
+  distR = irDistance(rightirLedPin, rightirReceiverPin);
+  distL = irDistance(leftirLedPin, leftirReceiverPin);
+  distM = irDistance(midirLedPin, midirReceiverPin);
+  if (distL > distR){
+    myservoR.writeMicroseconds(1410);
+    myservoL.writeMicroseconds(1530);
+  }
+  else if (distL < distR){
+    myservoL.writeMicroseconds(1590);
+    myservoR.writeMicroseconds(1460);
+  }
+  else if (distL == distR){
+    myservoL.writeMicroseconds(LeftForward);
+    myservoR.writeMicroseconds(RightForward);
+  }
 }
 void reverse(){
   Serial.println("Reversing");
@@ -158,69 +153,4 @@ void stop(){
   myservoR.writeMicroseconds(StopR);
   //delay(5);
   //Serial.println("Resuming");
-}
-void adjustor(){
-  distR = irDistance(rightirLedPin, rightirReceiverPin);
-  distL = irDistance(leftirLedPin, leftirReceiverPin);
-  distM = irDistance(midirLedPin, midirReceiverPin);
-
-  while (distL+1 != distR){
-    while (distM <= 7){
-      stop();
-      if (distL > distR){
-        myservoR.writeMicroseconds(1410);
-        myservoL.writeMicroseconds(1530);
-      }
-      else if (distL < distR){
-        myservoL.writeMicroseconds(1590);
-        myservoR.writeMicroseconds(1460);
-      }
-      else if (distL == distR){
-          myservoL.writeMicroseconds(LeftForward);
-          myservoR.writeMicroseconds(RightForward);
-      }
-      distL = irDistance(leftirLedPin, leftirReceiverPin);
-      distR = irDistance(rightirLedPin, rightirReceiverPin);
-      distM = irDistance(midirLedPin, midirReceiverPin);
-    }
-  }
-}
-void testspeed(){
-  int sl = 1500;
-  for(int s = 1500; s <= 1700; s += 25)
-   {
-     Serial.println(s);
-     Serial.println(sl);
-      myservoR.writeMicroseconds(s);
-      myservoL.writeMicroseconds(sl);
-      delay(1000);
-      stop();
-      delay(5000);
-      sl -= 25;
-
-   };
-}
-void mazeEnd(){
-  myservoL.writeMicroseconds(TurnRight);
-  myservoR.writeMicroseconds(TurnRight);
-  delay(Rightturntime*8);
-  stop();
-  for (int i = 0; i < 25; i = i + 1) {
-  curcom = commands[i];
-    if (curcom == 0){
-      continue;
-    }
-    else if (curcom == 1){
-      turnRight();
-      goForward();
-    }
-    else if (curcom == 2){
-      turnLeft();
-      goForward();
-    }
-    else if (curcom == 3){
-      goForward();
-    }
-   
-}
 }
