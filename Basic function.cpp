@@ -64,6 +64,9 @@ void loop()
   distM = irDistance(midirLedPin, midirReceiverPin);
   valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
   //Serial.print(distM);
+
+ 
+ /*
   if (valM == 0){
     if (valL == 0){
       turnRight();
@@ -89,12 +92,41 @@ void loop()
         comindex+=1;
       }
     }*/
-  }
+ /*
   else {
     goForward();
   }
+*/
 
+
+// new moving logic
+ if(valL==1 || valR==1)
+ {
+   if (valL==1)
+   {
+     turnLeft();
+   }
+   else if(valR==1)
+   {
+     turnRight();
+   }
+}
+else
+{
+  if (distM<=2)
+  {
+    adjustor2();
   }
+  else
+  {
+    goForward();
+  }
+}
+
+
+
+
+
 int irDetect(int irLedPin, int irReceiverPin, long frequency){
   tone(irLedPin, frequency);                 // Turn on the IR LED square wave
   delay(1);                                  // Wait 1 ms
@@ -180,6 +212,30 @@ void adjustor(){
     }
   }
 }
+
+
+
+void adjustor2(){
+  distR = irDistance(rightirLedPin, rightirReceiverPin);
+  Serial.println("Left:");
+  Serial.println(distL);
+  distL = irDistance(leftirLedPin, leftirReceiverPin);
+  Serial.println("Right:");
+  Serial.println(distR);
+
+  if (distL < distR){
+    myservoR.writeMicroseconds(1510);
+    delay(1000);
+  }
+  if (distL > distR){
+    myservoL.writeMicroseconds(1480);
+    delay(1000);
+  }
+}
+
+
+
+
 void testspeed(){
   int sl = 1500;
   for(int s = 1500; s <= 1700; s += 25)
