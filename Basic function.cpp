@@ -52,7 +52,7 @@ void setup(){
   Serial.begin(9600);  
   stop();
   delay(1000);
-  Serial.print("Robot Starting");
+  //Serial.print("Robot Starting");
 }
 
 void loop()
@@ -64,33 +64,18 @@ void loop()
   distR = irDistance(rightirLedPin, rightirReceiverPin);
   distL = irDistance(leftirLedPin, leftirReceiverPin);
   distM = irDistance(midirLedPin, midirReceiverPin);
+  Serial.print(distM);
   if (distM < 7){
-    if(valL==1 || valR==1){
-      if (valL == 1 && valR == 1){
-        if (distL > distR){
-          turnRight();
-          myservoL.writeMicroseconds(LeftForward);
-          myservoR.writeMicroseconds(RightForward);
-          delay(100);
-        }
-        else if (distL < distR){
-          turnLeft();
-          myservoL.writeMicroseconds(LeftForward);
-          myservoR.writeMicroseconds(RightForward);
-          delay(100);
-        }
+    if(distL >= 5 || distR >= 5){
+      if (distL > distR){
+        turnRight();
+        myservoL.writeMicroseconds(LeftForward);
+        myservoR.writeMicroseconds(RightForward);
       }
-      else if (valL==1){
-      turnRight();
-      myservoL.writeMicroseconds(LeftForward);
-      myservoR.writeMicroseconds(RightForward);
-      delay(100);
-      }
-      else if(valR==1){
-      turnLeft();
-      myservoL.writeMicroseconds(LeftForward);
-      myservoR.writeMicroseconds(RightForward);
-      delay(100);
+      else if (distL < distR){
+        turnLeft();
+        myservoL.writeMicroseconds(LeftForward);
+        myservoR.writeMicroseconds(RightForward);
       }
     }
   }
@@ -163,13 +148,6 @@ void goForward(){
     myservoL.writeMicroseconds(LeftForward);
     myservoR.writeMicroseconds(RightForward);
   }
-}
-void reverse(){
-  Serial.println("Reversing");
-  myservoL.writeMicroseconds(LeftReverse);
-  myservoR.writeMicroseconds(RightReverse);
-  delay(3000);
-  Serial.println("Reversing Completed");
 }
 void stop(){
   //Serial.println("Stopping");
