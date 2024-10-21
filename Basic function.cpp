@@ -68,6 +68,12 @@ valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
 distM = irDistance(midirLedPin, midirReceiverPin);
 valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
 //Serial.print(distM);
+if (valL == 0 && valR == 0 ){
+  if (distM < 7){
+    stop();
+  }
+  }
+
 if (distM <7){
   if (valL == 0 && valR == 0 ){
     stop();
