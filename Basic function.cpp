@@ -52,13 +52,13 @@ void setup(){
   Serial.begin(9600);  
   stop();
   delay(2500);
-  adjustor();
+  //adjustor();
   Serial.print("Robot Starting");
 }
 
 void loop()
 { Serial.println(valM);
-  delay(100);
+  //delay(100);
   valL = irDetect(leftirLedPin, leftirReceiverPin, leftfrequency);
   valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
   distM = irDistance(midirLedPin, midirReceiverPin);
@@ -97,6 +97,13 @@ void loop()
 
 */
 
+//test rotate
+ /*
+ rotate_right();
+ delay(500);
+ stop();
+ delay(3000);
+*/
 // new moving logic
  if(valL==1 || valR==1)
  {
