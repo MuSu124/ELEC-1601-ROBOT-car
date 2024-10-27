@@ -62,26 +62,27 @@ void loop()
 
 Serial.println(valM);
 //delay(100);
-
+distR = irDistance(rightirLedPin, rightirReceiverPin);
+distL = irDistance(leftirLedPin, leftirReceiverPin);
 valL = irDetect(leftirLedPin, leftirReceiverPin, leftfrequency);
 valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
 distM = irDistance(midirLedPin, midirReceiverPin);
 valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
 //Serial.print(distM);
-if (valL == 0 && valR == 0 ){
+if (distL < 7  && distR < 7 ){
   if (distM < 7){
     stop();
   }
   }
 
-if (distM <7){
+if (distM < 7){
   if (valL == 0 && valR == 0 ){
     stop();
   }
-  else if (valR == 1){
+  else if (distR == 7){
     turnLeft();
   }
-  else if (valL == 1){
+  else if (distL == 7){
       turnRight();
   }
   else{
