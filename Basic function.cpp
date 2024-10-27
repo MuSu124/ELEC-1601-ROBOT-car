@@ -59,15 +59,13 @@ Serial.print("Robot Starting");
 
 void loop()
 { 
-Serial.println(valM);
-//delay(100);
 distR = irDistance(rightirLedPin, rightirReceiverPin);
 distL = irDistance(leftirLedPin, leftirReceiverPin);
 valL = irDetect(leftirLedPin, leftirReceiverPin, leftfrequency);
 valM = irDetect(midirLedPin, midirReceiverPin, middlefrequency);
 distM = irDistance(midirLedPin, midirReceiverPin);
 valR = irDetect(rightirLedPin, rightirReceiverPin, rightfrequency);
-//Serial.print(distM);
+
 if (distL < 7  && distR < 7 ){
   if (distM < 7){
     stop();
@@ -75,7 +73,7 @@ if (distL < 7  && distR < 7 ){
   }
 
 if (distM < 7){
-  if (valL == 0 && valR == 0 ){
+  if (distL < 7 && distR < 7 ){
     stop();
   }
   else if (distR == 7){
@@ -92,7 +90,7 @@ distM = irDistance(midirLedPin, midirReceiverPin);
 }
 if (distM == 7){
   goForward();
-    if (valL == 0 && valR == 0){
+    if (distL < 7 && distR < 7){
       adjustor();
     }
 }
@@ -116,23 +114,16 @@ distance += irDetect(irLedPin, irReceiverPin, f);
 return distance;
 }
 void turnLeft(){
-//Serial.println("Begining left turn");
 myservoL.writeMicroseconds(TurnLeft);
 myservoR.writeMicroseconds(Stop);
 delay(Leftturntime);
 stop();
-//goForward();
-//Serial.println("Left Turn Completed");
-
 }
 void turnRight(){
-//Serial.println("Begining right turn");
 myservoL.writeMicroseconds(Stop);
 myservoR.writeMicroseconds(TurnRight);
 delay(Rightturntime);
 stop();
-//goForward();
-// Serial.println("Right Turn Completed");
 }
 void goForward(){
 //Serial.println("Going Forward");
