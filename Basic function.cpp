@@ -2,8 +2,8 @@
 Servo myservoL;
 Servo myservoR;
 // Variables that will need to be configured
-int Leftturntime = 1000; // time needed for robot to rotate 90 degrees left
-int Rightturntime = 1017; // time needed for robot to rotate 90 degrees right
+int Leftturntime = 1105; // time needed for robot to rotate 90 degrees left
+int Rightturntime = 1105; // time needed for robot to rotate 90 degrees right
 int forwardTime = 500; // time needed for robot to move 1 maze unit, maze wall is 20cm, maze corner is 7cm
 int StopL = 1495; // 0 Wheel speed for left wheel
 int StopR = 1500; // 0 Wheel speed for right wheel
@@ -37,6 +37,7 @@ int comindex = 0; // 0 = do nothing, 1 = Right turn, 2 = Left turn, 3 = go forwa
 int curcom = 0; // for iteration through list
 
 void setup(){
+
 Serial.begin(9600);
 myservoL.attach(13);
 myservoR.attach(12);
@@ -58,8 +59,6 @@ Serial.print("Robot Starting");
 
 void loop()
 { 
-  //adjustor();
-
 Serial.println(valM);
 //delay(100);
 distR = irDistance(rightirLedPin, rightirReceiverPin);
