@@ -4,6 +4,8 @@ Servo myservoR;
 // Variables that will need to be configured
 int Leftturntime = 1105; // time needed for robot to rotate 90 degrees left
 int Rightturntime = 1105; // time needed for robot to rotate 90 degrees right
+//int Leftturntime = 1000; // time needed for robot to rotate 90 degrees left
+//int Rightturntime = 1017; // time needed for robot to rotate 90 degrees right
 int forwardTime = 500; // time needed for robot to move 1 maze unit, maze wall is 20cm, maze corner is 7cm
 int StopL = 1495; // 0 Wheel speed for left wheel
 int StopR = 1500; // 0 Wheel speed for right wheel
