@@ -80,7 +80,7 @@ if (distM < 7){
     stop();
   }
   else if (distR == 7){
-    if (distM < 3){
+    if (distM <= 3){
       reverse();
       delay(500);
       turnLeft();
@@ -90,7 +90,7 @@ if (distM < 7){
     }
   }
   else if (distL == 7){
-      if (distM < 3){
+      if (distM <= 3){
       reverse();
       delay(500);
       turnRight();
