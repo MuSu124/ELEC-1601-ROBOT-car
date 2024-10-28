@@ -2,7 +2,7 @@
 Servo myservoL;
 Servo myservoR;
 // Variables that will need to be configured
-int Leftturntime = 1105; // time needed for robot to rotate 90 degrees left
+int Leftturntime = 1125; // time needed for robot to rotate 90 degrees left
 int Rightturntime = 1105; // time needed for robot to rotate 90 degrees right
 //int Leftturntime = 1000; // time needed for robot to rotate 90 degrees left
 //int Rightturntime = 1017; // time needed for robot to rotate 90 degrees right
@@ -75,14 +75,29 @@ if (distL < 7  && distR < 7 ){
   }
 
 if (distM < 7){
+  distM = irDistance(midirLedPin, midirReceiverPin);
   if (distL < 7 && distR < 7 ){
     stop();
   }
   else if (distR == 7){
-    turnLeft();
+    if (distM < 3){
+      reverse();
+      delay(500);
+      turnLeft();
+    }
+    else{
+      turnLeft();
+    }
   }
   else if (distL == 7){
+      if (distM < 3){
+      reverse();
+      delay(500);
       turnRight();
+    }
+    else{
+      turnRight();
+    }
   }
   else{
     stop();
@@ -94,6 +109,9 @@ if (distM == 7){
   goForward();
     if (distL < 7 && distR < 7){
       adjustor();
+    }
+    else{
+      adjustor2();
     }
 }
 
@@ -139,7 +157,7 @@ void reverse(){
 Serial.println("Reversing");
 myservoL.writeMicroseconds(LeftReverse);
 myservoR.writeMicroseconds(RightReverse);
-delay(3000);
+
 Serial.println("Reversing Completed");
 }
 void stop(){
@@ -164,5 +182,43 @@ void adjustor(){
   else if (distL == distR){
     myservoL.writeMicroseconds(LeftForward);
     myservoR.writeMicroseconds(RightForward);
+  }
+}
+void adjustor2(){
+  distR = irDistance(rightirLedPin, rightirReceiverPin);
+  distL = irDistance(leftirLedPin, leftirReceiverPin);
+  distM = irDistance(midirLedPin, midirReceiverPin);
+  if (distL == 7 && distR == 7){
+    goForward();
+  }
+  else if (distL == 7){
+    if (distR < 3){
+    myservoR.writeMicroseconds(1410);
+    myservoL.writeMicroseconds(1530);
+    }
+    else if (distR > 3){
+    myservoL.writeMicroseconds(1590);
+    myservoR.writeMicroseconds(1460);
+    }
+  }
+  else if (distR == 7){
+    if (distL < 3){
+    myservoL.writeMicroseconds(1590);
+    myservoR.writeMicroseconds(1460);
+    }
+    else if (distL > 3){
+    myservoR.writeMicroseconds(1410);
+    myservoL.writeMicroseconds(1530);
+    }
+  }
+  else{
+    if (distR < 2){
+    myservoR.writeMicroseconds(1410);
+    myservoL.writeMicroseconds(1530);
+    }
+    else if (distL < 2){
+    myservoL.writeMicroseconds(1590);
+    myservoR.writeMicroseconds(1460);
+    }
   }
 }
